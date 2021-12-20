@@ -1,0 +1,969 @@
+; Read and print a string
+; Summ of 2 numbers
+; Producct of 2 nummbers
+; Average
+; find Odd or even
+; String Compare
+; Reverse String
+; Average of array of numbers
+; Count Vowels
+; SUM OF N NUMBERS / PRODECT OF N NUMBERS
+; find no of words in a string
+; (a+b)(c+d)/(a+c)
+; E Count in Exercise
+; ODD AND EVEN NO'S IN A ARRAY
+; CONCATENATION
+
+
+; Read and print a string
+
+.model small
+.stack 100h
+.data
+    msg1 db "Enter the string: $"
+    msg2 db "The string is: $"
+    value db 20 dup('$')
+
+.code
+start:  mov ax,@data
+          mov ds,ax
+          lea dx,msg1
+          mov ah,09h
+          int 21h
+          mov si,00h
+
+l1:  mov ah,01h
+      int 21h
+      mov value[si], al
+      inc si
+      cmp al,0dh
+      jne l1
+      lea dx,msg2
+      mov ah,09h
+      int 21h
+      mov si,00h
+
+l2:  mov dl,value[si]
+      mov ah,02h
+      int 21h
+      inc si
+      cmp al,0dh
+      je l3
+      jmp l2
+
+
+
+l3:  mov ah,4ch
+      int 21h
+end start
+
+
+; Summ of 2 numbers
+
+data segment
+num1 db ?
+num2 db ?
+sum db ?
+msg1 db 10,13,"Enter the first number: $"
+msg2 db 10,13,"Enter the second number: $"
+msg3 db 10,13,"Sum is: $"
+data ends
+
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+         mov ds,ax
+         lea dx,msg1
+         mov ah,9h
+         int 21h
+         mov ah,1h
+         int 21h
+         sub al,30h
+         mov num1,al
+
+         lea dx,msg2
+         mov ah,9h
+         int 21h
+         mov ah,1h
+         int 21h
+         sub al,30h
+         mov num2,al
+
+         add al,num1
+         mov sum,al
+         mov ah,0
+         aaa
+         add ah,30h
+         add al,30h
+       
+        mov bx,ax
+
+        lea dx,msg3
+        mov ah,9h
+        int 21h
+        mov ah,2h
+        mov dl,bh
+        int 21h
+        mov ah,2
+        mov dl,bl
+        int 21h
+        mov ah,4ch
+        int 21h
+code ends
+end start
+
+
+; Producct of 2 nummbers
+
+data segment
+num1 db ?
+num2 db ?
+result db ?
+msg1 db 10,13,"Enter the first number: $"
+msg2 db 10,13,"Enter the second number: $"
+msg3 db 10,13,"Product is: $"
+data ends
+
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+         mov ds,ax
+         lea dx,msg1
+         mov ah,9h
+         int 21h
+         mov ah,1h
+         int 21h
+         sub al,30h
+         mov num1,al
+
+         lea dx,msg2
+         mov ah,9h
+         int 21h
+         mov ah,1h
+         int 21h
+         sub al,30h
+         mov num2,al
+
+         mul num1
+         mov result,al
+         aam
+         add ah,30h
+         add al,30h
+         mov bx,ax
+                   
+          lea dx,msg3
+          mov ah,9h
+          int 21h
+          mov ah,2h
+          mov dl,bh
+          int 21h
+          mov ah,2
+          mov dl,bl
+          int 21h
+          mov ah,4ch
+          int 21h
+code ends
+end start
+
+
+; Average
+
+.model small
+
+.stack 100h
+
+.data 
+   
+   val1 db ? 
+   var1 db "enter the no of numbers: $"
+   var2 db "enter the number: $"
+   var3 db "the average is: $"
+.code
+
+start: mov ax,@data   ;Copy the data segment to ax and then to ds
+       mov ds,ax
+
+;Commands to print the message present in var1
+       lea dx,var1 
+       mov ah,09h
+       int 21h
+
+; command to take input from the user on the no.of numbers to be added
+       mov ah,01h
+       int 21h
+       sub al,30h ;string to number conversion(ASCII to DECIMAL)
+
+
+; initialise registers 
+       mov cl,00
+       mov bl,al
+       mov al,00
+       mov val1,al
+       
+
+; loop to enter the numbers to the array
+loop1: lea dx,var2
+       mov ah,09h
+       int 21h
+    
+; To take input from the user     
+       mov ah,01h
+       int 21h
+       sub al,30h ; To convert the number inputted to int
+       add cl,01  ;To increase the counter
+       
+; To add the numbers and store that in val1
+       add al,val1
+       mov val1,al
+       cmp bl,cl ;Compare the number of numbers with the counter to know whether to exit the loop
+       jne loop1 ;Exit the loop on reaching the limit
+
+       ; Transfer the control to loop2
+       loop loop2
+
+; print the next command present in var3
+loop2: lea dx,var3
+       mov ah,09h
+       int 21h
+
+       
+; Commands to print the result (There are some commands that are unknown)
+       MOV AX,00 
+       MOV AL,VAL1 ;Move the result present in val1 to al
+       DIV BL ;Divide the result with bl and store the result in al
+       ADD AX,3030H ;dec to ascii conversion
+       MOV DX,AX
+       MOV AH,02H ;Command to print the result(single character)
+       INT 21H
+
+       loop loop3 ;Transfer the command to the lopp3
+
+; Commands to terminate the code
+loop3: mov ah,4ch
+       int 21h
+
+
+end start
+
+
+; find Odd or even
+
+.model small
+.stack 100h
+.data 
+    var2 db "enter the number: $"
+    var3 db "the number is even $"
+    var4 db "the number is odd $"
+    
+.code
+start:mov ax, @data
+      mov ds, ax
+
+      lea dx, var2
+      mov ah, 09h
+      int 21h
+
+      mov ah, 01h
+      int 21h
+      sub al, 30h
+        
+      mov bl,2 ; n%2==0
+      mov cl,00
+      
+      div bl
+      mov al,ah
+      cmp al,cl
+      jne loop3
+      loop loop2
+      
+    
+loop2:lea dx, var3
+      mov ah, 09h
+      int 21h
+      loop loop4
+
+loop3:lea dx, var4
+      mov ah, 09h
+      int 21h
+      loop loop4
+
+loop4:mov ah, 4ch 
+      int 21H
+    
+end start
+
+
+
+; String Compare
+
+.model small
+.stack 100h
+.data
+    var1 db "Enter the first string: $"
+    var2 db "Enter the second string: $"
+    msg1 db 13,10, "Strings are equal ", 13,10, "$"
+    msg2 db 13,10, "Strings are not equal ", 13,10, "$"
+    str1 db 20 dup ('$')
+    str2 db 20 dup ('$')
+    len1 dw 0
+    len2 dw 0
+    
+.code 
+start:  mov ax,@data    
+        mov ds,ax
+
+        lea dx,var1
+        mov ah, 09h
+        int 21H
+        mov si, 00h
+
+l1:     mov ah,01h
+        int 21H
+        mov str1[si], al
+        inc len1
+        inc si
+        cmp al, 0dh
+        jne l1
+
+        sub len1, 1
+        mov cx, len1
+
+        lea dx, var2
+        mov ah,09h
+        int 21H
+        mov si, 00h
+
+l2:     mov ah,01h
+        int 21H
+        mov str2[si], al
+        inc si
+        inc len2
+        cmp al, 0dh
+        jne l2
+
+        sub len2, 1
+        mov bx, len2
+        cmp cx, bx
+        jne notEq
+
+notEq:  lea dx, msg2
+        mov ah, 09h
+        int 21H
+        jmp l3
+
+compare:
+        mov al, [si]
+        mov bl, [di]
+        cmp al,bl
+        jne notEq
+        inc si
+        inc di
+        dec cx
+        jnz compare
+
+        lea dx, equal
+        mov ah, 09h
+        int 21h
+
+        jmp l3
+
+equal:  lea dx, msg1
+        mov ah,09h
+        int 21H
+        jmp l3
+
+l3:     mov ah, 4ch
+        int 21H
+
+end
+
+
+; Reverse String
+
+.model small
+.stack 100h
+
+.data
+    msg1 db 10,13,"Enter the string: $"
+    msg2 db 10,13,"Reversed string is: $"
+    value db 20 dup("$")
+
+.code
+    mov ax, @data
+    mov ds, ax
+
+    lea dx, msg1
+    mov ah, 09h
+    int 21h
+
+    mov si, 00h
+
+    input:
+        mov ah, 01h
+        int 21h
+        mov value[si], al
+        inc si
+        cmp al, 0dh
+        jne input
+
+    ; printMessage:
+    ;     lea dx, msg2
+    ;     mov ah, 09h
+    ;     int 21h
+
+    reverse:
+        mov dl, value[si]
+        mov ah, 02h
+        int 21h
+        dec si
+        cmp si, 00
+        jne reverse
+        mov dl, value[si]
+        mov ah, 02h
+        int 21h
+
+    exit:
+        mov ah, 04ch
+        int 21h
+
+end
+
+
+; Average of array of numbers
+
+.model small
+.stack 100h
+
+.data
+    msg1 db 10,13, "Enter the length of array: $"
+    msg2 db 10,13, "Enter the numbers: $", 10, 13
+    msg3 db 10,13, "The average is: $"
+    sum db ?
+    count dw 0
+
+.code
+    mov ax, @data
+    mov ds, ax
+
+    lea dx, msg1
+    mov ah, 09h
+    int 21h
+
+    mov ah, 01h
+    int 21h
+    sub al, 30h
+    mov ch, al
+
+    lea dx, msg2
+    mov ah, 09h
+    int 21h
+
+    mov al, 00
+    mov sum, al
+
+    mov cl, 00
+
+    input:
+        mov ah, 01h
+        int 21h
+        sub al, 30h
+        add al, sum
+        mov sum, al
+        inc cl
+        cmp cl, ch
+        jne input
+
+        lea dx, msg3
+        mov ah, 09h
+        int 21h
+
+        mov ax, 00
+        mov al, sum
+        mov dl, ch
+        div dl
+        add ax, 3030h
+        mov dx, ax
+        mov ah, 02h
+        int 21h
+
+    endLoop:
+        mov ah, 04ch
+        int 21h
+
+end
+
+
+; Count Vowels
+
+.model small
+.stack 100h
+
+.data
+ msg1 db 10,13,"Enter string: $"
+ msg2 db 10,13,"No. of vowels: $"
+ str db 20 dup("$")
+ len dw 0
+ count dw 0
+
+.code
+ mov ax,@data
+ mov ds,ax
+
+ lea dx,msg1
+ mov ah,09h
+ int 21h
+
+ mov si,00h
+
+ input:
+  mov ah,01h
+  int 21h
+  mov str[si],al
+  inc si
+  inc len
+  cmp al,0dh
+  jne input
+ 
+
+ mov si,00h
+ mov cx,00h
+ compare:
+  mov bl,str[si]
+  cmp bl,"a"
+  je addit
+  cmp bl,"e"
+  je addit
+  cmp bl,"i"
+  je addit
+  cmp bl,"o"
+  je addit
+  cmp bl,"u"
+  je addit
+compare2:
+  inc si
+  cmp si,len
+  jne compare
+  jmp next
+
+ addit:
+  mov cx,count
+  inc cl
+  mov count,cx 
+  jmp compare2
+
+ next:
+  lea dx,msg2
+  mov ah,09h
+  int 21h 
+
+  mov ax,count
+  add ax,3030h
+  mov dx,ax
+  mov ah,02h
+  int 21h
+
+ exit:
+  mov ah,04ch
+  int 21h
+
+end
+
+
+; SUM OF N NUMBERS / PRODECT OF N NUMBERS
+
+data segment
+num1 db ?
+num2 db ?
+sum db ? ; result db ?
+msg1 db 10,13,"Enter the first number: $"
+msg2 db 10,13,"Enter the second number: $"
+msg3 db 10,13,"Sum is: $" ;"Product is: $"
+data ends
+
+code segment
+assume cs:code,ds:data
+start: mov ax,data
+         mov ds,ax
+         lea dx,msg1
+         mov ah,9h
+         int 21h
+         mov ah,1h
+         int 21h
+         sub al,30h
+         mov num1,al
+
+         lea dx,msg2
+         mov ah,9h
+         int 21h
+         mov ah,1h
+         int 21h
+         sub al,30h
+         mov num2,al
+
+         add al,num1 ; mul num1
+         mov sum,al  ; mov result,al
+         mov ah,0    ; aam
+         aaa         ;
+         add ah,30h
+         add al,30h
+       
+        mov bx,ax
+
+        lea dx,msg3
+        mov ah,9h
+        int 21h
+        mov ah,2h
+        mov dl,bh
+        int 21h
+        mov ah,2
+        mov dl,bl
+        int 21h
+        mov ah,4ch
+        int 21h
+code ends
+end start
+
+
+; find no of words in a string
+
+.model small
+.stack 100h
+
+.data
+ msg1 db 10,13,"Enter string: $"
+ msg2 db 10,13,"No. of words: $"
+ str db 20 dup("$")
+ len dw 0
+ count dw 0
+
+.code
+ mov ax,@data
+ mov ds,ax
+
+ lea dx,msg1
+ mov ah,09h
+ int 21h
+
+ mov si,00h
+
+ input:
+  mov ah,01h
+  int 21h
+  mov str[si],al
+  inc si
+  inc len
+  cmp al,0dh
+  jne input
+ 
+
+ mov si,00h
+ mov cx,00h
+ compare:
+  mov bl,str[si]
+  cmp bl," "
+  je addit
+compare2:
+  inc si
+  cmp si,len
+  jne compare
+  jmp next
+
+ addit:
+  mov cx,count
+  inc cl
+  mov count,cx 
+  jmp compare2
+
+ next:        
+  mov cx,count
+  inc cl
+  mov count,cx
+
+  lea dx,msg2
+  mov ah,09h
+  int 21h 
+
+  mov ax,count
+  add ax,3030h
+  mov dx,ax
+  mov ah,02h
+  int 21h
+
+ exit:
+  mov ah,04ch
+  int 21h
+
+end
+
+
+; (a+b)(c+d)/(a+c)
+
+.model small
+.stack 100h
+.data
+    msg1 db  10,13, "Enter the Numbers: $"
+    msg2 db  10,13, "The Result is: $"
+    msg3 db  10,13, "Reminder is: $"
+    A db ?
+    B db ?
+    C db ?
+    D db ?
+
+.code
+start:  mov ax,@data
+        mov ds,ax
+          
+        lea dx,msg1
+        mov ah,09h
+        int 21h
+          
+        mov ah,01h
+        int 21h
+        sub al, 30h
+        mov A , al
+
+        mov ah,01h
+        int 21h
+        sub al, 30h
+        mov B , al
+
+        mov ah,01h
+        int 21h
+        sub al, 30h
+        mov C , al
+
+        mov ah,01h
+        int 21h
+        sub al, 30h
+        mov D , al
+
+        mov bl,00h
+        mov al,A
+        Add B, 
+        mov bl,al
+        mov al,C
+        Add D,
+
+        MUL bl
+        mov bl,al
+
+        mov cl,00h
+        mov al,A
+        Add C,
+        mov cl,al
+        mov al,bl
+
+        DIV cl
+        mov bl,ah
+
+        lea dx,msg2
+        mov ah,09h
+        int 21h
+        add al,30h
+        mov dl,al
+        mov ah,02h
+        int 21h
+
+        lea dx,msg3
+        mov ah,09h 
+        int 21h
+        add bl,30h
+        mov dl,al
+        mov ah,02h
+        int 21h
+
+end
+
+
+; E Count in Exercise
+
+.model small
+.stack 100h
+
+.data
+value db "exercise$"
+msg db "No. of Es:$"
+
+
+
+.code
+start:
+	mov ax,@data
+	mov ds,ax
+	mov bl,00
+	mov si,00
+l1:	
+	cmp value[si],'$'
+	je display
+	cmp value[si],'e'
+	
+	je increment
+	inc si
+	jmp l1
+	
+increment:
+	inc si
+	inc bl
+	jmp l1
+display:	
+	
+	
+	lea dx,msg
+	mov ah,09h
+	int 21h
+	
+	mov dl,bl
+	add dl,30h
+	mov ah,02h
+	int 21h
+exit :
+	mov ah,04ch
+	int 21h
+end start
+
+
+; ODD AND EVEN NO'S IN A ARRAY
+
+.model small
+.stack 100h
+
+.data
+    msg1 db 10,13,"Enter the number of elements in the list: $"
+    msg2 db 10,13,"Enter the elements: $"
+    msg3 db 10,13,"Odd numbers: $"
+    msg4 db 10,13,"Even numbers: $"
+    odd db 20 dup (" ")
+    eve db 20 dup (" ")
+
+.code
+    mov ax, @data
+    mov ds, ax
+    lea dx, msg1
+    mov ah, 09h
+    int 21h
+    mov ah, 01h
+    int 21h
+    sub al, 30h
+    mov ch, al
+    lea dx, msg2
+    mov ah, 09h
+    int 21h
+    mov si, 00h
+    mov di, 00h
+    enternum:
+        mov ah, 01h
+        int 21h
+        mov dl, al
+        sub al, 30h
+        mov cl, 02H
+        div cl
+        cmp ah, 00h
+        jne saveodd
+        mov eve[di], dl
+        add di, 01h
+        jmp counter
+        saveodd:
+            mov odd[si], dl
+            add si, 01h
+        counter:
+            sub ch, 01h
+            cmp ch, 00h
+            jne enternum
+        printeven:
+            lea dx, msg4
+            mov ah, 09h
+            int 21H
+            cmp di, 00h
+            je printodd
+            displayeven:
+                mov dl, eve[di]
+                mov ah, 02h
+                int 21H
+                sub di, 01h
+                cmp di, 00h
+                jne displayeven
+                mov dl, eve[di]
+                mov ah, 02H
+                int 21H
+        printodd:
+            lea dx, msg3
+            mov ah, 09h
+            int 21H
+            cmp si, 00h
+            je terminate
+            displayodd:
+                mov dl, odd[si]
+                mov ah, 02H
+                int 21H
+                sub si, 01h
+                cmp si, 00h
+                jne displayodd
+                mov dl, odd[si]
+                mov ah, 02H
+                int 21h
+    terminate:
+        mov ah, 04ch
+        int 21H
+end
+
+; CONCATENATION
+
+print macro m
+mov ah,09h
+mov dx,offset m
+int 21h
+endm
+
+.model small
+.data
+empty db 10,13, "   $"
+str1 db 25,?,25 dup('$')
+str2 db 25,?,25 dup('$')
+mstring db 10,13, "Enter the first string: $"
+mstring2 db 10,13, "Enter second string: $"
+mconcat db 10,13, "Concatenated string: $"
+
+.code
+start: mov ax,@data
+         mov ds,ax
+         print mstring
+         call accept_string     
+         print mstring2
+         mov ah,0ah
+         lea dx,str2
+         int 21h
+         mov cl,str1+1         
+         mov si,offset str1
+
+next:  inc si
+         dec cl
+         jnz next
+         inc si
+         inc si
+         mov di,offset str2
+         inc di
+         inc di
+         
+         mov cl,str2+1
+
+move_next:  mov al,[di]
+	         mov [si],al
+	         inc si
+	         inc di
+	         dec cl
+	         jnz move_next
+	         print mconcat
+	         print str1+2
+		   
+exit: mov ah,4ch       
+        int 21h
+
+accept_string proc near
+mov ah,0ah          
+mov dx,offset str1  
+int 21h
+ret
+accept_string endp
+
+end start
+end
