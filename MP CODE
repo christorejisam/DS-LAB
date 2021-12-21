@@ -777,48 +777,52 @@ end
 
 ; E Count in Exercise
 
-.model small
-.stack 100h
-
-.data
-value db "exercise$"
-msg db "No. of Es:$"
-
-
-
+.model SMALL
+.stack 100H
+.DATA
+  msg1 db 10,13,"enter the string:$"
+  value db 20 dup("$")
+  
 .code
 start:
-	mov ax,@data
-	mov ds,ax
-	mov bl,00
-	mov si,00
-l1:	
-	cmp value[si],'$'
-	je display
-	cmp value[si],'e'
-	
-	je increment
-	inc si
-	jmp l1
-	
-increment:
-	inc si
-	inc bl
-	jmp l1
-display:	
-	
-	
-	lea dx,msg
-	mov ah,09h
-	int 21h
-	
-	mov dl,bl
-	add dl,30h
-	mov ah,02h
-	int 21h
-exit :
-	mov ah,04ch
-	int 21h
+     mov ax,@DATA
+     mov ds,ax
+     lea dx,msg1
+     mov ah,09H
+     int 21h
+     mov cl,00h
+loop1: mov ah,01H
+       int 21H
+       mov value[si],al
+       inc si
+       cmp al,0dh
+       jne loop1
+       mov si,00h
+       loop loop2
+    
+
+loop2: mov al,value[si]
+       cmp al,"e"
+       je loop3
+       inc si
+       cmp al,0dh
+       jne loop2
+       loop loop4
+loop3: inc cl
+       inc si
+       cmp al,0dh
+       jne loop2
+       loop loop4
+loop4:
+       mov dl,cl
+       add dl,32h
+       mov ah,02H
+       int 21H
+       
+
+loop5:mov ah,4ch
+      int 21H
+      
 end start
 
 
