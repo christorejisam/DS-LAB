@@ -1,0 +1,2438 @@
+//# CIRCLE DRAWING USING GL_POINTS
+//# CIRCLE DRAWING USING GL_TRIANGLE_FAN
+# BOUNCING BALL WITH TRAIL
+# BOUNCING BALL 
+# BLOOMING FLOWER
+//#SNOW MAN
+//#SNOW MAN 1
+//#PIE CHART
+#SEESAW
+#BIRD FLY
+//#BOY LIFT BOX
+# CAR 
+//# DNA 
+#CLOCK
+#PENDULUM
+# ROLLING BALL
+# MAN WALKING
+#FAN 
+# RIPPLE
+# SOLAR SYSTEM
+//# WINDMILL
+
+
+# CIRCLE DRAWING USING GL_POINTS
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+
+
+radius =50
+
+def init():
+	glutInit()
+	glutInitDisplayMode(GLUT_RGB)
+	glutInitWindowSize(800,800)
+	glutCreateWindow("circle")
+	glClearColor(0.0,0.0,0.0,1.0)
+	gluOrtho2D(-400,400,-400,400)
+	
+
+def plot_circle():
+	global radius
+	glPointSize(4)
+	glColor3f(1.0,0.0,0.0)
+	glBegin(GL_POINTS)
+	for j in range(0,50):
+		for i in range(0,46):
+			x=j*cos(radians(i))
+			y=j*sin(radians(i))
+			glVertex2f(+x,+y)
+			glVertex2f(+x,-y)
+			glVertex2f(-x,+y)
+			glVertex2f(-x,-y)
+			glVertex2f(+y,+x)
+			glVertex2f(+y,-x)
+			glVertex2f(-y,+x)
+			glVertex2f(-y,-x)
+	glEnd()
+	
+
+def display():
+	glClear(GL_COLOR_BUFFER_BIT)
+	plot_circle()
+	glFlush()
+
+
+def main():
+	init()
+	glutDisplayFunc(display)
+	glutMainLoop()
+	
+	
+main()
+
+# CIRCLE DRAWING USING GL_TRIANGLE_FAN
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+
+
+radius =50
+center = [-100,100]
+
+def init():
+	glutInit()
+	glutInitDisplayMode(GLUT_RGB)
+	glutInitWindowSize(800,800)
+	glutCreateWindow("circle")
+	glClearColor(0.0,0.0,0.0,1.0)
+	gluOrtho2D(-400,400,-400,400)
+	
+
+def plot_circle():
+	global radius, center
+	glColor3f(1.0,0.0,0.0)
+	glBegin(GL_TRIANGLE_FAN)
+	for i in range(0,361):
+		x= radius*cos(radians(i))+center[0]
+		y= radius*sin(radians(i))+center[1]
+		glVertex2f(x,y)			
+	glEnd()
+	
+
+def display():
+	glClear(GL_COLOR_BUFFER_BIT)
+	plot_circle()
+	glFlush()
+
+
+def main():
+	init()
+	glutDisplayFunc(display)
+	glutMainLoop()
+	
+	
+main()
+
+
+# BOUNCING BALL WITH TRAIL
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+from math import *
+
+
+r1 = 40
+r2 = 130
+
+xt = 350
+yt = 0
+
+ax = []
+ay = []
+
+speed = 1
+theta = 0
+
+def init():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGB)
+    glutInitWindowSize(500,500)
+    glutCreateWindow("Bouncing")
+    glClearColor(0,0,0,0)
+    gluOrtho2D(-500,500,-500,500)
+
+
+def circle():
+    global r1,r2,theta
+    glColor3f(1,0,0)
+    glPointSize(3)
+    glBegin(GL_POINTS)
+    xc = r2*cos(radians(theta)) + xt
+    yc = r2*sin(radians(theta))
+    ax.append(xc)
+    ay.append(yc)
+    for j in range (0,r1):
+        for i in range (0,46):
+            x = j*cos(radians(i))
+            y = j*sin(radians(i))
+            glVertex2f(x+xc,y+yc)
+            glVertex2f(x+xc,-y+yc)
+            glVertex2f(-x+xc,y+yc)
+            glVertex2f(-x+xc,-y+yc)
+            glVertex2f(y+xc,x+yc)
+            glVertex2f(-y+xc,x+yc)
+            glVertex2f(y+xc,-x+yc)
+            glVertex2f(-y+xc,-x+yc)
+    glEnd()
+
+def trail():
+    global ax,ay
+    glColor3f(0,1,0)
+    glPointSize(1)
+    glBegin(GL_POINTS)
+    for i in range (0, len(ax)):
+        glVertex2f(ax[i],ay[i])
+    glEnd()
+
+def update(n):
+    global speed,theta,xt,r2
+    theta += speed
+    if theta == 180:
+        theta = 0
+        xt -= 2*r2-30
+        r2 -= 30
+    if r2 <0:
+        speed = 0
+    
+    glutTimerFunc(1,update,0)
+    glutPostRedisplay()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    trail()
+    circle()
+    glFlush()
+
+def main():
+    init()
+    glutDisplayFunc(display)
+    glutTimerFunc(0,update,0)
+    glutMainLoop()
+
+main()
+
+
+# BOUNCING BALL 
+
+from OpenGL.GL import *
+from OpenGL.GL.ARB import separate_shader_objects
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+from math import cos,sin,radians
+
+r = 30
+xc = 0
+yc = 0
+speed = 5
+speed2 = 2
+
+def init():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGB)
+    glutInitWindowSize(500,500)
+    glutCreateWindow("Sumesh")
+    glClearColor(0,0,0,0)
+    gluOrtho2D(-100,100,-100,100)
+
+def update(n):
+    global yc,speed,xc,speed2
+    if yc + r == 100:
+        speed -= 5
+    elif yc - r == -100:
+        speed += 5
+    if xc + r == 100:
+        speed2 -= 2
+    elif xc - r == -100:
+        speed2 += 2
+
+    xc = xc + speed2
+    yc = yc + speed
+    glutTimerFunc(50,update,0)
+    glutPostRedisplay()
+
+
+def bounce():
+    global r,xc,yc
+    glColor3f(0,0,1)
+    glLineWidth(1)
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range (0,360):
+        glVertex2f(r*cos(radians(i))+xc,r*sin(radians(i))+yc)
+    glEnd()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    bounce()
+    glFlush()
+
+def main():
+    init()
+    glutDisplayFunc(display)
+    glutTimerFunc(0,update,0)
+    glutMainLoop()
+
+main()
+
+
+# BLOOMING FLOWER
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+
+WINDOW_TITLE = "Template"
+WINDOW_SIZE = 500
+PLANE_SIZE = 100
+
+BOTTOM = [0, 0]
+PET_LEN = 60
+PET_ANGS = [90, 90, 90, 90, 90]
+PET_MAX_ANGS = [30, 60, 90, 120, 150]
+
+
+def init():
+    glutInitDisplayMode(GLUT_RGB)
+    glutInit()  # Initiating glut
+    glutInitWindowSize(WINDOW_SIZE, WINDOW_SIZE)  # window size
+    glutCreateWindow(WINDOW_TITLE)  # window title
+    glClearColor(0.0, 0.0, 0.1, 1.0)  # window background
+    gluOrtho2D(-PLANE_SIZE, PLANE_SIZE, -PLANE_SIZE, PLANE_SIZE)
+
+
+def plot_circle(r, xc, yc):
+    glColor3f(1, 1, 0)
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range(361):
+        glVertex2f(r * cos(radians(i)) + xc, r * sin(radians(i)) + yc)
+    glEnd()
+
+
+def plot_lines(start, end):
+    glLineWidth(3.0)
+    glColor3f(1, 0, 0)
+    glBegin(GL_LINES)
+    glVertex2f(start[0], start[1])
+    glVertex2f(end[0], end[1])
+    glEnd()
+
+
+def plot_petals():
+    for ang in PET_ANGS:
+        xfinal = PET_LEN * cos(radians(ang)) + BOTTOM[0]
+        yfinal = PET_LEN * sin(radians(ang)) + BOTTOM[1]
+
+        plot_lines(BOTTOM, [xfinal, yfinal])
+        plot_circle(10, xfinal, yfinal)
+
+
+def animator(x):
+    global PET_ANGS
+    SPEED = 1
+    for i in range(len(PET_ANGS)):
+        j = abs(i - int(len(PET_ANGS) / 2))  # [0, 1, 2, 0, 1, 2]
+        if i < (len(PET_ANGS) / 2):
+            if PET_ANGS[i] > PET_MAX_ANGS[i]:
+                PET_ANGS[i] -= SPEED * (j / 10)
+        elif i > (len(PET_ANGS) / 2):
+            if PET_ANGS[i] < PET_MAX_ANGS[i]:
+                PET_ANGS[i] += SPEED * (j / 10)
+    glutTimerFunc(50, animator, 0)
+    glutPostRedisplay()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    plot_petals()
+    glFlush()
+
+
+def main():
+    init()
+    glutDisplayFunc(display)  # display function
+    glutTimerFunc(0, animator, 0)
+    glutMainLoop()  # process events and triggers callback functions
+
+
+main()
+
+
+#SNOW MAN
+
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import * 
+import math
+import numpy
+import random
+
+WINDOW_SIZE = 2000
+ANGLE= 40
+
+
+end_y = 0
+leg_offset = 80
+
+
+
+
+def init():
+    glClearColor(0.0,0.0,0.0,1.0) 
+    gluOrtho2D(-WINDOW_SIZE,WINDOW_SIZE,-WINDOW_SIZE,WINDOW_SIZE) 
+
+def update(value):  
+    global end_y
+    glutPostRedisplay()
+    glutTimerFunc(int(1000/60),update,0)
+
+def drawPixel(x,y):
+    glColor3f(1,1.0,1)
+    glPointSize(5.0)
+    glBegin(GL_POINTS)
+    glVertex2i(x,y)
+    glEnd()
+
+def midPointCircleDraw(x_centre, y_centre, r): 
+    x = r 
+    y = 0  
+    drawPixel(x+x_centre,y+y_centre)
+    if (r > 0) : 
+        drawPixel(x+x_centre,-y+y_centre)
+        drawPixel(y+x_centre,x+y_centre)
+        drawPixel(y+x_centre,x+y_centre)
+        drawPixel(-y+x_centre,x+y_centre)
+    P = 1 - r  
+    while x > y: 
+        y += 1
+        if P <= 0:  
+            P = P + 2 * y + 1
+        else:          
+            x -= 1
+            P = P + 2 * y - 2 * x + 1
+        if (x < y): 
+            break 
+        drawPixel(x+x_centre,y+y_centre)  
+        drawPixel(-x+x_centre,y+y_centre)  
+        drawPixel(x+x_centre,-y+y_centre)  
+        drawPixel(-x+x_centre,-y+y_centre)  
+        if x != y: 
+            drawPixel(y+x_centre,x+y_centre)  
+            drawPixel(-y+x_centre,x+y_centre)  
+            drawPixel(y+x_centre,-x+y_centre)  
+            drawPixel(-y+x_centre,-x+y_centre) 
+
+def snowMan():
+    glClear(GL_COLOR_BUFFER_BIT) 
+    midPointCircleDraw(0,0,100)
+    midPointCircleDraw(0,-300,200)
+
+def draw_hands_r():
+    global end_y
+    end_x = 400
+    start_x = 150
+    start_y = -200
+    glColor3f(0.5,0.35,0.05)
+    glLineWidth(5.0)
+    glBegin(GL_LINES)
+    glVertex2i(start_x,start_y)
+    glVertex2i(end_x,end_y)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2i(end_x,end_y)
+    glVertex2i(end_x+80,end_y)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2i(end_x,end_y)
+    glVertex2i(end_x+50,end_y+80)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2i(end_x,end_y)
+    glVertex2i(end_x+50,end_y-80)
+    glEnd()
+    glFlush()
+
+def draw_leg_r():
+    global leg_offset
+    end_y = 0
+    end_x = 0
+    start_x = +150
+    start_y = -450
+    end_y = start_y - 200
+    end_x = start_x + leg_offset
+    print(leg_offset)
+    glColor3f(0.5,0.35,0.05)
+    glLineWidth(5.0)
+    glBegin(GL_LINES)
+    glVertex2i(start_x,start_y)
+    glVertex2i(end_x,end_y)
+    glEnd()
+    glFlush()
+
+def draw_leg_l():
+    global leg_offset
+    end_y = 0
+    end_x = 0
+    start_x = -150
+    start_y = -450
+    end_y = start_y - 200
+    end_x = start_x - leg_offset
+    glColor3f(0.5,0.35,0.05)
+    glLineWidth(5.0)
+    glBegin(GL_LINES)
+    glVertex2i(start_x,start_y)
+    glVertex2i(end_x,end_y)
+    glEnd()
+    glFlush()
+
+def draw_hands_l():
+    global end_y
+    end_x = -450
+    start_x = -150
+    start_y = -200
+    glColor3f(0.5,0.35,0.05)
+    glLineWidth(5.0)
+    glBegin(GL_LINES)
+    glVertex2i(start_x,start_y)
+    glVertex2i(end_x,end_y)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2i(end_x,end_y)
+    glVertex2i(end_x-80,end_y)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2i(end_x,end_y)
+    glVertex2i(end_x-50,end_y+80)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2i(end_x,end_y)
+    glVertex2i(end_x-50,end_y-80)
+    glEnd()
+    glFlush()
+
+
+def drawScene():
+    snowMan()
+    draw_hands_r()
+    draw_hands_l()
+    draw_leg_r()
+    draw_leg_l()
+    glutSwapBuffers()
+
+
+
+
+def getInputArrows(key,b,c):
+    global end_y
+    if(key==GLUT_KEY_UP):
+        end_y = 0
+        leg_offset = 0
+        print("ARROW UP IS PRESSED")
+    elif(key==GLUT_KEY_DOWN):
+        end_y = -300
+        leg_offset = 80
+        print("ARROW DOWN IS PRESSED")
+
+
+def main():
+    print("Man Animation. Starting Window...")
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE)
+    glutInitWindowSize(500,500)
+    glutInitWindowPosition(0,0)
+    glutCreateWindow("Snowman Hands")
+    glutSpecialFunc(getInputArrows)
+    glutDisplayFunc(drawScene)
+    glutTimerFunc(0,update,0)
+    glutIdleFunc(drawScene)
+    
+    init()
+    glutMainLoop()
+  
+
+
+main()
+
+
+#SNOW MAN 1
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import pi, cos, sin, radians
+
+WINDOW_TITLE = "Template"
+WINDOW_SIZE = 500
+PLANE_SIZE = 100
+
+CENTER_1 = [0, -30]
+RAD_1 = 30
+
+RAD_2 = 20
+CENTER_2 = [0, CENTER_1[1] + RAD_1 + RAD_2]
+
+RAD_3 = 10
+CENTER_3 = [0, CENTER_2[1] + RAD_2 + RAD_3]
+
+HAND_LEN = 40
+HAND_SPEED = 5
+INCLINATION = 30
+
+
+def get_inclined_points(vertice, thetta):
+    return [
+        round(
+            vertice[0] * cos(radians(thetta))
+            - vertice[1] * sin(radians(thetta))
+        ),
+        round(
+            vertice[0] * sin(radians(thetta))
+            + vertice[1] * cos(radians(thetta))
+        ),
+    ]
+
+
+def init_glut():
+    print(f"\nOpening {WINDOW_TITLE}...")  # Opening message
+    glutInitDisplayMode(GLUT_RGB)
+    glutInit()  # Initiating glut
+    glutInitWindowSize(WINDOW_SIZE, WINDOW_SIZE)  # window size
+    glutCreateWindow(WINDOW_TITLE)  # window title
+    glClearColor(0.0, 0.0, 0.0, 0.0)  # window background
+    gluOrtho2D(-PLANE_SIZE, PLANE_SIZE, -PLANE_SIZE, PLANE_SIZE)
+
+
+def plot_circle_1():
+    glColor3f(1, 1, 0)
+    glPointSize(3.0)
+    glBegin(GL_POINTS)
+    thetta = 0
+    d_thetta = 1 / (10000)
+    while thetta <= pi /4:
+        x = RAD_1 * cos(thetta)
+        y = RAD_1 * sin(thetta)
+        glVertex2f(x + CENTER_1[0], y + CENTER_1[1])
+        glVertex2f(x + CENTER_1[0], -y + CENTER_1[1])
+        glVertex2f(-x + CENTER_1[0], y + CENTER_1[1])
+        glVertex2f(-x + CENTER_1[0], -y + CENTER_1[1])
+        glVertex2f(y + CENTER_1[0], x + CENTER_1[1])
+        glVertex2f(-y + CENTER_1[0], x + CENTER_1[1])
+        glVertex2f(y + CENTER_1[0], -x + CENTER_1[1])
+        glVertex2f(-y + CENTER_1[0], -x + CENTER_1[1])
+        thetta += d_thetta
+    glEnd()
+
+
+
+def plot_circle_2():
+    glColor3f(1, 1, 0)
+    glPointSize(3.0)
+    glBegin(GL_POINTS)
+    thetta = 0
+    d_thetta = 1 / (10000)
+    while thetta <= pi /4:
+        x = RAD_2 * cos(thetta)
+        y = RAD_2 * sin(thetta)
+        glVertex2f(x + CENTER_2[0], y + CENTER_2[1])
+        glVertex2f(x + CENTER_2[0], -y + CENTER_2[1])
+        glVertex2f(-x + CENTER_2[0], y + CENTER_2[1])
+        glVertex2f(-x + CENTER_2[0], -y + CENTER_2[1])
+        glVertex2f(y + CENTER_2[0], x + CENTER_2[1])
+        glVertex2f(-y + CENTER_2[0], x + CENTER_2[1])
+        glVertex2f(y + CENTER_2[0], -x + CENTER_2[1])
+        glVertex2f(-y + CENTER_2[0], -x + CENTER_2[1])
+        thetta += d_thetta
+    glEnd()
+
+def plot_circle_3():
+    glColor3f(1, 1, 0)
+    glPointSize(3.0)
+    glBegin(GL_POINTS)
+    thetta = 0
+    d_thetta = 1 / (10000)
+    while thetta <= pi /4:
+        x = RAD_3 * cos(thetta)
+        y = RAD_3 * sin(thetta)
+        glVertex2f(x + CENTER_3[0], y + CENTER_3[1])
+        glVertex2f(x + CENTER_3[0], -y + CENTER_3[1])
+        glVertex2f(-x + CENTER_3[0], y + CENTER_3[1])
+        glVertex2f(-x + CENTER_3[0], -y + CENTER_3[1])
+        glVertex2f(y + CENTER_3[0], x + CENTER_3[1])
+        glVertex2f(-y + CENTER_3[0], x + CENTER_3[1])
+        glVertex2f(y + CENTER_3[0], -x + CENTER_3[1])
+        glVertex2f(-y + CENTER_3[0], -x + CENTER_3[1])
+        thetta += d_thetta
+    glEnd()
+
+
+def plot_hand():
+    glColor3f(0, 0, 1)
+    glLineWidth(3.0)
+    glBegin(GL_LINES)
+    glVertex2f(CENTER_2[0]+ RAD_2, CENTER_2[1])
+    glVertex2f(
+        get_inclined_points([CENTER_2[0]+ RAD_2 + HAND_LEN, CENTER_2[1]], INCLINATION)[0], 
+        get_inclined_points([CENTER_2[0]+ RAD_2 + HAND_LEN, CENTER_2[1]], INCLINATION)[1]
+    )
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2f(CENTER_2[0]- RAD_2, CENTER_2[1])
+    glVertex2f(
+        get_inclined_points([CENTER_2[0]- RAD_2 - HAND_LEN, CENTER_2[1]], -INCLINATION)[0], 
+        get_inclined_points([CENTER_2[0]- RAD_2 - HAND_LEN, CENTER_2[1]], -INCLINATION)[1]
+    )
+    glEnd()
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    plot_circle_1()
+    plot_circle_2()
+    plot_circle_3()
+    plot_hand()
+    glFlush()
+
+
+def animator(x):
+    global INCLINATION, HAND_SPEED
+    if INCLINATION >= 45:
+        HAND_SPEED = -HAND_SPEED
+    elif INCLINATION <= -45:
+        HAND_SPEED = -HAND_SPEED
+    INCLINATION += HAND_SPEED
+    glutTimerFunc(int(1000/600), animator, 0)
+    glutPostRedisplay()
+
+
+def main():
+    init_glut()
+    glutDisplayFunc(display)  # display function
+    glutTimerFunc(0, animator, 0)
+    glutMainLoop()  # process events and triggers callback functions
+
+
+if __name__ == "__main__":
+    main()
+
+
+#PIE CHART
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+from math import cos,sin,radians
+
+i=0
+ar = []
+def init():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGB)
+    glutInitWindowSize(500,500)
+    glutCreateWindow("PIE CHART")
+    glClearColor(1,1,1,1)
+    gluOrtho2D(-100,100,-100,100)
+
+
+def pie_plot(r):
+    global ar
+    glPointSize(3)
+    glBegin(GL_POINTS)
+    j =0
+    for i in range (0,360):
+        glColor3f(1-(j/(len(ar)+1)),(j/(len(ar)+1)),j/(len(ar)+1))
+        if i >= ar[j]:
+            j += 1
+        glVertex2f(r*cos(radians(i)),r*sin(radians(i)))
+    glEnd()
+
+    
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    for i in range (0,30):
+        pie_plot(i)
+    glFlush()
+
+def inputs():
+    global ar
+    n = int(input("Enter no.of categories: "))
+    for i in range (0,n):
+        ang = int(input("Enter percentage:"))
+        angle = 0 if i == 0 else ar[i-1]  +  int(ang*360/100)
+        ar.append(angle)
+    ar.append(360)
+    print(ar)
+
+def main():
+    inputs()
+    init()
+    glutDisplayFunc(display)
+    glutMainLoop()
+
+
+
+main()
+
+
+
+#SEESAW
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+from math import cos,sin,radians
+
+length = 50
+theta = 0
+speed = 1
+x1 = 0
+x2 = 0
+y1 = 0
+y2 = 0
+r = 5
+state =1
+
+def init():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGB)
+    glutInitWindowSize(500,500)
+    glutCreateWindow("SEESAW")
+    glClearColor(0,0,0,0)
+    gluOrtho2D(-100,100,-100,100)
+
+
+def update(n):
+    global theta,speed,state
+    # theta += 1*speed
+
+    # if theta == 20:
+
+    #     speed = -speed
+    # elif theta == -20:
+
+    #     speed = -speed
+    if state == 1:
+        if theta < 20:
+            theta += speed
+        else:
+            state = -1
+    elif state == -1:
+        if theta > -20:
+            theta -= speed
+        else:
+            state = 1
+
+    glutTimerFunc(int(1000/60),update,0)
+    glutPostRedisplay()
+
+
+def rotated_points(vertex,theta):
+    return[
+        round(
+            (vertex[0])*cos(radians(theta)) 
+            - (vertex[1])*sin(radians(theta))
+            ),
+        round(
+            (vertex[0])*sin(radians(theta)) 
+            + (vertex[1])*cos(radians(theta))
+        )
+    ]
+
+def hinge():
+    glColor3f(1,0,0)
+    glLineWidth(6.0)
+    glBegin(GL_POLYGON)
+    glVertex2f(0,0)
+    glVertex2f(-5, -10)
+    glVertex2f(5,-10)
+    glEnd()
+
+# def weights():
+#     xc1 = length*cos(radians(theta))
+#     yc1 = length*sin(radians(theta)) + 5
+#     xc2 = -length*cos(radians(theta))
+#     yc2 = -length*sin(radians(theta)) + 5
+#     glColor3f(1,1,0)
+#     glLineWidth(6)
+#     glBegin(GL_TRIANGLE_FAN)
+#     for i in range (0,360):
+#         glVertex2f(r*cos(radians(i))+xc1,r*sin(radians(i))+yc1)
+#     glEnd()
+
+#     glBegin(GL_TRIANGLE_FAN)
+#     for i in range (0,360):
+#         glVertex2f(r*cos(radians(i))+xc2,r*sin(radians(i))+yc2)
+#     glEnd() 
+
+def poly():
+    global length,theta
+    vertices1 = [
+        [length+5,0],
+        [length+5,5],
+        [length-5,5],
+        [length-5,0],
+    ]
+    vertices2 = [
+        [-length+5,0],
+        [-length+5,5],
+        [-length-5,5],
+        [-length-5,0],
+    ]
+    glColor3f(0,0,1)
+    glLineWidth(1)
+    glBegin(GL_POLYGON)
+    for vertex in vertices1:
+        glVertex2fv(rotated_points(vertex,theta))
+    glEnd()
+    glBegin(GL_POLYGON)
+    for vertex in vertices2:
+        glVertex2fv(rotated_points(vertex,theta))
+    glEnd()
+
+
+def cso():
+    glColor3f(0,1,1)
+    glLineWidth(3)
+    glBegin(GL_LINES)
+    x1 = length*cos(radians(theta))
+    y1 = length*sin(radians(theta))
+    x2 = -(length)*cos(radians(theta))
+    y2 = -(length)*sin(radians(theta))
+    glVertex2f(x1,y1)
+    glVertex2f(x2,y2)
+    glEnd()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    # glColor3f(1,1,1)
+    # glLineWidth(2)
+    # glBegin(GL_LINES)
+    # glVertex2f(-100,-10)
+    # glVertex2f(100,-10)
+    # glEnd()
+    cso()
+    hinge()
+    # weights()
+    poly()
+    glFlush()
+
+
+def main():
+    init()
+    glutDisplayFunc(display)
+    glutTimerFunc(0,update,0)
+    glutMainLoop()
+
+main()
+
+
+#BIRD FLY
+
+from OpenGL.GL import *
+from OpenGL.GLU import *  # opengl utility library
+from OpenGL.GLUT import *  # opengl utility toolkit
+from math import *
+
+BIRD_CENTRE = [250 ,0]
+BIRD_WIDTH = 100
+theta = 30
+SPEED = 1
+
+
+def init():
+    glClearColor(1,1,1,1)
+    gluOrtho2D(-250,250, -250, 250)
+
+def animator(x):
+    global theta, SPEED, BIRD_CENTRE
+    BIRD_CENTRE[0] -= 0.4
+    theta += 1 * SPEED
+    if theta == 0:
+        SPEED = 1
+    if theta >= 80:
+        SPEED = -1
+    glutTimerFunc(int(1000/60), animator, 0)
+    glutPostRedisplay()
+
+
+def bird():
+    glColor3f(0,0,0)
+    glLineWidth(5)
+    glBegin(GL_LINES)
+    glVertex2f(BIRD_CENTRE[0] - (BIRD_WIDTH/2), BIRD_CENTRE[1])
+    glVertex2f(BIRD_CENTRE[0] + (BIRD_WIDTH/2), BIRD_CENTRE[1])
+    glEnd()
+
+    glBegin(GL_POLYGON)
+    vertices = [
+        [BIRD_CENTRE[0] - BIRD_WIDTH/2, BIRD_CENTRE[1] + 10],
+        [BIRD_CENTRE[0] - BIRD_WIDTH/2, BIRD_CENTRE[1] - 10],
+        [BIRD_CENTRE[0] - BIRD_WIDTH, BIRD_CENTRE[1]],
+    ]
+    for vertice in vertices:
+        glVertex2fv(vertice)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2f(BIRD_CENTRE[0] - 15 , BIRD_CENTRE[1])
+    x = BIRD_CENTRE[0] + 25 * cos(radians(theta))
+    y = BIRD_CENTRE[1] + 25 * sin(radians(theta))
+    glVertex2f(x,y)
+    glEnd()
+    glBegin(GL_LINES)
+    glVertex2f(BIRD_CENTRE[0] - 15 , BIRD_CENTRE[1])
+    glVertex2f(x,-y)
+    glEnd()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    bird()
+    glFlush()
+
+def main():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGB)
+    glutInitWindowSize(500,500)
+    glutCreateWindow("See saw")
+    init()
+    glutDisplayFunc(display)
+    glutTimerFunc(0,animator,0)
+    glutMainLoop()
+
+main()
+
+
+#BOY LIFT BOX
+
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import * 
+import math
+import numpy
+import random
+
+WINDOW_SIZE = 2000
+ANGLE= 40
+
+
+
+GLOBAL_X_POSTION = 0
+GLOBAL_Y_POSTION = 0
+GLOBAL_X_DIR = 1
+TARGET_FPS=60
+RADIUS = 100
+FRAMES = 0
+
+SPINE_START_X= GLOBAL_X_POSTION
+SPINE_START_Y= GLOBAL_Y_POSTION
+SPINE_END_X= SPINE_START_X
+SPINE_END_Y= SPINE_START_Y-200
+
+ANGLE_HAND = 40
+HAND_ANIM_DIR = 1
+IS_ILFTED = True
+
+
+box_x1 = GLOBAL_X_POSTION+130
+box_y1 = GLOBAL_Y_POSTION-250
+box_x2 = box_x1+400
+box_y2 = box_y1
+box_x3 = box_x2
+box_y3 = box_y1+400
+box_x4 = box_x1
+box_y4 = box_y3
+IS_BOX_LEFT = False
+
+
+def init():
+    glClearColor(0.0,0.0,0.0,1.0) 
+    gluOrtho2D(-WINDOW_SIZE,WINDOW_SIZE,-WINDOW_SIZE,WINDOW_SIZE) 
+
+def update(value):
+    global GLOBAL_X_POSTION
+    global GLOBAL_Y_POSTION
+    global TARGET_FPS
+    global SPINE_START_X
+    global SPINE_START_Y
+    global SPINE_END_X
+    global SPINE_END_Y
+    global ANGLE_HAND
+    global HAND_ANIM_DIR
+    global GLOBAL_X_DIR
+    global box_x1
+    global box_y1
+    global box_x2
+    global box_y2
+    global box_x3
+    global box_y3
+    global box_x4
+    global box_y4
+    global IS_BOX_LEFT
+    if(GLOBAL_X_POSTION==WINDOW_SIZE):
+        GLOBAL_X_DIR = -1
+    elif (GLOBAL_X_POSTION == -WINDOW_SIZE):
+        GLOBAL_X_DIR = 1
+    
+    if(GLOBAL_X_DIR == 1):
+        GLOBAL_X_POSTION = GLOBAL_X_POSTION
+    elif(GLOBAL_X_DIR == -1):
+        GLOBAL_X_POSTION = GLOBAL_X_POSTION
+
+    if(IS_ILFTED):
+        box_x1 = GLOBAL_X_POSTION-200
+        box_y1 = GLOBAL_Y_POSTION+230
+        box_x2 = box_x1+400
+        box_y2 = box_y1
+        box_x3 = box_x2
+        box_y3 = box_y1+400
+        box_x4 = box_x1
+        box_y4 = box_y3
+        
+    else:
+        if(IS_BOX_LEFT):
+            box_x1 = GLOBAL_X_POSTION-520
+        else:
+            box_x1 = GLOBAL_X_POSTION+130
+        box_y1 = GLOBAL_Y_POSTION-250
+        box_x2 = box_x1+400
+        box_y2 = box_y1
+        box_x3 = box_x2
+        box_y3 = box_y1+400
+        box_x4 = box_x1
+        box_y4 = box_y3
+        
+    
+
+
+
+
+
+    
+    SPINE_START_X= GLOBAL_X_POSTION
+    SPINE_START_Y= GLOBAL_Y_POSTION
+    SPINE_END_X= SPINE_START_X
+    SPINE_END_Y= SPINE_START_Y-200
+
+    glutPostRedisplay()
+    glutTimerFunc(int(1000/TARGET_FPS),update,0)
+
+
+def plotLineDDA(x1,y1,x2,y2):
+    deltaX = x2-x1
+    deltaY = y2-y1
+    steps = 0
+    if(abs(deltaX)>abs(deltaY)):
+        steps = abs(deltaX)
+    else:
+        steps = abs(deltaY)
+    Xincrement = deltaX/steps
+    Yincrement = deltaY/steps
+    glColor3f(1.0,0.0,0.0)
+    glPointSize(5.0)
+    glBegin(GL_POINTS)
+
+    for step in range(1,steps+1):
+        glVertex2f(round(x1),round(y1))
+        x1 = x1 + Xincrement
+        y1 = y1 + Yincrement
+    glEnd()
+    glFlush()
+
+def drawBox():
+    global GLOBAL_X_POSTION
+    global GLOBAL_Y_POSTION
+    global box_x1
+    global box_y1
+    global box_x2
+    global box_y2
+    global box_x3
+    global box_y3
+    global box_x4
+    global box_y4
+    plotLineDDA(box_x1,box_y1,box_x2,box_y2)
+    plotLineDDA(box_x2,box_y2,box_x3,box_y3)
+    plotLineDDA(box_x3,box_y3,box_x4,box_y4)
+    plotLineDDA(box_x4,box_y4,box_x1,box_y1)
+
+
+
+def drawHead(x,y):
+    i = 0.0        
+    glBegin(GL_TRIANGLE_FAN)
+    for i in numpy.arange(0, 360.0, 1.0):
+        glColor3f(0,1,1) 
+        glVertex2f(RADIUS*math.cos(math.pi * (i) / 180.0) + x, RADIUS*math.sin(math.pi * (i) / 180.0) + y)
+    glEnd()
+
+def drawSpine():
+    glClear(GL_COLOR_BUFFER_BIT) 
+    glColor3f(0.0,1.0,0.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_START_X,SPINE_START_Y)
+    glVertex2f(SPINE_END_X,SPINE_END_Y)
+    glEnd()
+
+def drawLegL():
+    global SPINE_END_X
+    global SPINE_END_Y
+    global SPINE_START_X
+    global SPINE_START_Y
+    glColor3f(1.0,1.0,1.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_END_X,SPINE_END_Y)
+    glVertex2f(SPINE_END_X-100*math.sin(math.radians(ANGLE_HAND)),SPINE_END_Y-100*math.cos(math.radians( ANGLE_HAND)))
+
+    glEnd()
+
+
+
+def drawLegR():
+    global SPINE_END_X
+    global SPINE_END_Y
+    global SPINE_START_X
+    global SPINE_START_Y
+    global ANGLE_HAND
+    glColor3f(1.0,1.0,0.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES),
+    glVertex2f(SPINE_END_X,SPINE_END_Y)
+    glVertex2f(SPINE_END_X+100*math.sin(math.radians(ANGLE_HAND)),SPINE_END_Y-100*math.cos(math.radians( ANGLE_HAND)))
+    glEnd()
+
+def drawHandL():
+    
+    global SPINE_START_X
+    global SPINE_START_Y
+    glColor3f(1.0,1.0,1.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_START_X,SPINE_START_Y-100)
+    glVertex2f(SPINE_START_X-100*math.sin(math.radians(ANGLE_HAND)),SPINE_START_Y-100*math.cos(math.radians( ANGLE_HAND)))
+
+    # glVertex2f(SPINE_START_X-100*math.sin(math.radians(45)),SPINE_START_Y-100*math.cos(math.radians(45)))
+    glEnd()
+
+def drawHandR():
+    
+    global SPINE_START_X
+    global SPINE_START_Y
+    glColor3f(1.0,1.0,1.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_START_X,SPINE_START_Y-100)
+    glVertex2f(SPINE_START_X-100*math.sin(math.radians(-ANGLE_HAND)),SPINE_START_Y-100*math.cos(math.radians(-ANGLE_HAND)))
+    glEnd()
+
+def drawScene():
+    global SPINE_START_X
+    global SPINE_START_Y
+    drawSpine()
+    drawHead(SPINE_START_X,SPINE_START_Y+RADIUS)
+    drawLegL()
+    drawLegR()
+    drawHandL()
+    drawHandR()
+    drawBox()
+    glutSwapBuffers()
+
+
+
+def getInputArrows(key,b,c):
+    global IS_ILFTED
+    global GLOBAL_X_POSTION
+    global IS_BOX_LEFT
+
+    
+    if(key==GLUT_KEY_UP):
+        IS_ILFTED = True
+        print("ARROW UP IS PRESSED")
+    elif(key==GLUT_KEY_DOWN):
+        IS_ILFTED = False
+        print("ARROW DOWN IS PRESSED")
+    elif(key==GLUT_KEY_LEFT):
+        GLOBAL_X_POSTION = GLOBAL_X_POSTION - 50
+        IS_BOX_LEFT = True
+        print("ARROW LEFT IS PRESSED")
+    elif(key==GLUT_KEY_RIGHT):
+        GLOBAL_X_POSTION = GLOBAL_X_POSTION + 50
+        IS_BOX_LEFT = False
+        print("ARROW RIGHT IS PRESSED")
+
+
+def main():
+    print("Man Animation. Starting Window...")
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE)
+    glutInitWindowSize(500,500)
+    glutInitWindowPosition(0,0)
+    glutCreateWindow("BOY MOVING | Naseem's OpenGLlabs")
+    glutSpecialFunc(getInputArrows)
+    glutDisplayFunc(drawScene)
+    glutTimerFunc(0,update,0)
+    glutIdleFunc(drawScene)
+    
+    init()
+    glutMainLoop()
+  
+
+
+main()
+
+
+# CAR 
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import tan, cos, pi, sin, radians
+import sys
+import playsound
+
+WINDOW_SIZE = 200
+RADIUS = 7
+OFFSET = 0
+
+def init():
+    glClearColor(0, 0, 0, 1)
+    gluOrtho2D(-WINDOW_SIZE, WINDOW_SIZE, -WINDOW_SIZE, WINDOW_SIZE)
+
+def draw_circle(x, y):
+    global OFFSET
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range(361):
+        # glColor3f(cos(i), 0, cos(i))
+        if i < 180:
+            glColor3f(1, 0, 0)
+        else:
+            glColor3f(0, 1, 0)
+        glVertex2f(RADIUS * cos(OFFSET + pi * i / 180) + x, RADIUS * sin(OFFSET + pi * i / 180) + y)
+    glEnd()
+
+class Car:
+    def __init__(self):
+        self.speed = 1
+        self.angle = float(input("Enter the angle of inclination: "))
+        self.x1, self.y1 = -WINDOW_SIZE, -WINDOW_SIZE * tan(radians(self.angle))
+        self.x2, self.y2 = WINDOW_SIZE, WINDOW_SIZE * tan(radians(self.angle))
+        self.x = self.y = 0
+        if self.angle > 0:
+            self.to_right = False
+        else:
+            self.to_right = True
+        self.start_point = [0, 0]
+
+    # Function to calculate the rotated points
+    def get_rotated_points(self, vertices):
+        points = []
+        for x, y in vertices:
+            points.append([round(x * cos(radians(self.angle)) - y * sin(radians(self.angle))), round(x * sin(radians(self.angle)) + y * cos(radians(self.angle)))])        
+        return points
+
+    def draw_car(self, x, y):
+        # x *= cos(radians(self.angle))
+        # y *= sin(radians(self.angle))
+        if self.to_right:
+            vertices = [
+                [x, y + RADIUS],
+                [x, y + 10 + RADIUS],
+                [x + 10 , y + 10 + RADIUS],
+                [x + 20 , y + 20 + RADIUS],
+                [x + 40 , y + 20 + RADIUS],
+                [x + 50 , y + 10 + RADIUS],
+                [x + 60 , y + 10 + RADIUS],
+                [x + 70 , y + RADIUS],
+            ]
+        else:
+            vertices = [
+                [x, y + RADIUS],
+                [x + 10, y + 10 + RADIUS],
+                [x + 30 , y + 10 + RADIUS],
+                [x + 30 , y + 20 + RADIUS],
+                [x + 50 , y + 20 + RADIUS],
+                [x + 60 , y + 10 + RADIUS],
+                [x + 70 , y + 10 + RADIUS],
+                [x + 70 , y + RADIUS],
+            ]
+
+        rotated_vertices = self.get_rotated_points(vertices)
+
+        tyres = [
+            [x + 10, y + RADIUS],
+            [x + 60, y + RADIUS],
+        ]
+
+        rotated_tyres = self.get_rotated_points(tyres)
+
+        glLineWidth(2)
+        glBegin(GL_POLYGON)
+        for vertex in rotated_vertices:
+            glVertex2fv(vertex)
+        glEnd()
+
+        for tyre in rotated_tyres:
+            draw_circle(tyre[0], tyre[1])
+
+
+    def create_line(self):
+        glClear(GL_COLOR_BUFFER_BIT)
+        glColor3f(1, 1, 1)
+        glLineWidth(5)
+        glBegin(GL_LINES)
+        glVertex2f(self.x1, self.y1)
+        glVertex2f(self.x2, self.y2)
+        glEnd()
+
+    def display(self):
+        x = (self.start_point[0] * cos(radians(self.angle)) - self.start_point[1] * sin(radians(self.angle)))
+        y = (self.start_point[0] * sin(radians(self.angle)) + self.start_point[1] * cos(radians(self.angle)))
+        self.create_line()
+        self.draw_car(x, y)
+        glutSwapBuffers()
+
+    def update(self, value):
+        global OFFSET
+        x = self.start_point[0]
+        y = self.start_point[1]
+        if self.to_right:
+            OFFSET -= 0.05 * self.speed
+            x += self.speed * cos(radians(-self.angle))
+            y += self.speed * sin(radians(-self.angle))
+        else:
+            OFFSET += 0.05 * self.speed
+            x -= self.speed * cos(radians(-self.angle))
+            y -= self.speed * sin(radians(-self.angle))
+        if x > WINDOW_SIZE - 60:
+            self.to_right = False
+        elif x < -WINDOW_SIZE:
+            self.to_right = True
+        self.start_point[0] = x
+        self.start_point[1] = y
+        glutPostRedisplay()
+        glutTimerFunc(int(1000/60), self.update, 0)
+
+    def controls(self, key, x, y):
+        if key == b"d":
+            self.to_right = True
+        elif key == b"a":
+            self.to_right = False
+        elif key == b"w":
+            self.speed += 1
+        elif key == b"s":
+            self.speed -= 1
+            if self.speed < 0:
+                self.speed = 0 
+        elif key == b"h":
+            playsound.playsound("D:\git\CG-LAB\EllipseDrawingAlgorithms.py", block=False)
+
+
+def main():
+    car = Car()
+    print("Creating window...")
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE)
+    glutInitWindowSize(1000, 1000)
+    glutInitWindowPosition(0, 0)
+    glutCreateWindow("Car | Abhinav Rajesh")
+    glutDisplayFunc(car.display)
+    glutKeyboardFunc(car.controls)
+    glutTimerFunc(0, car.update, 0)
+    glutIdleFunc(car.display)
+    init()
+    glutMainLoop()
+
+if __name__ == "__main__":
+    main()
+
+
+# DNA 
+
+from math import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+
+def init():
+    glutInitDisplayMode(GLUT_RGB)
+    glutInit()
+    glutInitWindowSize(1600, 900)
+    glutCreateWindow("O/P")
+    glClearColor(0.0, 0.0, 0.0, 1.0)
+    gluOrtho2D(-750, 750, -2, 2)
+
+
+def disp():
+    glClear(GL_COLOR_BUFFER_BIT)
+    sin_cos()
+    glFlush()
+
+
+def sin_cos():
+    glPointSize(5.0)
+    glColor3f(0, 1, 0)
+    glBegin(GL_POINTS)
+    for x in range(-720, 721):
+        glVertex2f(x, sin(radians(x/2)))
+        glVertex2f(x, -sin(radians((x/2))))    
+    glEnd()
+    glLineWidth(4.0)
+    glColor3f(1.0, 0, 0)
+    glBegin(GL_LINES)
+    for x in range(-720, 721, 45):
+        glVertex2f(x, sin(radians(x/2)))
+        glVertex2f(x, cos(radians((x/2) + 90)))
+    glEnd()
+    glBegin(GL_SPHERE_MAP)
+
+
+def main():
+    init()
+    glutDisplayFunc(disp)
+    glutMainLoop()
+
+
+main()
+
+
+#CLOCK
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+from datetime import datetime
+
+WINDOW_TITLE = "Template"
+WINDOW_SIZE = 500
+PLANE_SIZE = 100
+
+CLOCK_CENTER = [400, 400]
+CLOCK_RAD = 200
+
+SEC_LEN = CLOCK_RAD - 10
+SEC_ANG = -90
+
+MIN_LEN = CLOCK_RAD - 20
+MIN_ANG = -90
+
+HR_LEN = CLOCK_RAD - 30
+HR_ANG = -90
+
+
+def init():
+    glutInitDisplayMode(GLUT_RGB)
+    glutInit()  # Initiating glut
+    glutInitWindowSize(1024, 768)  # window size
+    glutCreateWindow(WINDOW_TITLE)  # window title
+    glClearColor(0, 0, 0, 0)  # window background
+    gluOrtho2D(0, 1024, 768, 0)
+
+
+def plot_clock():
+    glPointSize(5.0)
+    glColor3f(1, 1, 0)
+    glBegin(GL_POINTS)
+    for thetta in range(45):
+        x = CLOCK_RAD * cos(radians(thetta))
+        y = CLOCK_RAD * sin(radians(thetta))
+        glVertex2f(x + CLOCK_CENTER[0], y + CLOCK_CENTER[1])
+        glVertex2f(y + CLOCK_CENTER[0], x + CLOCK_CENTER[1])
+        glVertex2f(x + CLOCK_CENTER[0], -y + CLOCK_CENTER[1])
+        glVertex2f(-y + CLOCK_CENTER[0], x + CLOCK_CENTER[1])
+        glVertex2f(-x + CLOCK_CENTER[0], y + CLOCK_CENTER[1])
+        glVertex2f(y + CLOCK_CENTER[0], -x + CLOCK_CENTER[1])
+        glVertex2f(-x + CLOCK_CENTER[0], -y + CLOCK_CENTER[1])
+        glVertex2f(-y + CLOCK_CENTER[0], -x + CLOCK_CENTER[1])
+    glEnd()
+
+
+def plot_second():
+    glLineWidth(2.0)
+    glColor3f(0, 0, 1)
+    glBegin(GL_LINES)
+    glVertex2f(CLOCK_CENTER[0], CLOCK_CENTER[1])
+    x = CLOCK_CENTER[0] + SEC_LEN * cos(radians(SEC_ANG))
+    y = CLOCK_CENTER[1] + SEC_LEN * sin(radians(SEC_ANG))
+    glVertex2f(x, y)
+    glEnd()
+
+
+def plot_minute():
+    glLineWidth(5.0)
+    glColor3f(0, 1, 0)
+    glBegin(GL_LINES)
+    glVertex2f(CLOCK_CENTER[0], CLOCK_CENTER[1])
+    x = CLOCK_CENTER[0] + MIN_LEN * cos(radians(MIN_ANG))
+    y = CLOCK_CENTER[1] + MIN_LEN * sin(radians(MIN_ANG))
+    glVertex2f(x, y)
+    glEnd()
+
+
+def plot_hour():
+    glLineWidth(7.0)
+    glColor3f(1, 0, 0)
+    glBegin(GL_LINES)
+    glVertex2f(CLOCK_CENTER[0], CLOCK_CENTER[1])
+    x = CLOCK_CENTER[0] + HR_LEN * cos(radians(HR_ANG))
+    y = CLOCK_CENTER[1] + HR_LEN * sin(radians(HR_ANG))
+    glVertex2f(x, y)
+    glEnd()
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    plot_clock()
+    plot_second()
+    plot_minute()
+    plot_hour()
+    glFlush()
+
+
+def animator(x):
+    global HR_ANG, SEC_ANG, MIN_ANG
+    SEC_ANG = SEC_ANG + 6
+    MIN_ANG = MIN_ANG + (6 / 60)
+    HR_ANG = HR_ANG + (360 / 43200)
+    glutTimerFunc(1000, animator, 0)
+    glutPostRedisplay()
+
+
+def main():
+    cur_time = datetime.now()
+    cur_hr = cur_time.strftime("%H")
+    cur_min = cur_time.strftime("%M")
+    cur_sec = cur_time.strftime("%S")
+    global SEC_ANG, MIN_ANG, HR_ANG
+    SEC_ANG = (int(cur_sec) * 6) - 90
+    MIN_ANG = (int(cur_min) * 6) - 90
+    HR_ANG = (int(cur_hr) * 30) - 90
+    print(cur_hr, cur_min, cur_sec)
+    init()
+    glutDisplayFunc(display)  # display function
+    glutTimerFunc(0, animator, 0)
+    glutMainLoop()  # process events and triggers callback functions
+
+
+main()
+
+
+#PENDULUM
+
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import * 
+import math
+import numpy
+
+print("Pendulum Settings:\n")
+
+WINDOW_SIZE = 1000
+GLOBAL_X_POSTION = 0
+GLOBAL_Y_POSTION = 0
+TARGET_FPS=60
+STATE = 1
+
+# Pendulam Settings
+pend_length = float(input("\n\tPenulum Length: "))
+BOB_RADIUS =  float(input("\n\tBob Radius: "))
+MAX_THETA =  float(input("\n\tMax Displacement Angle: "))
+THETA = MAX_THETA
+TIME_PERIOD =  2*math.pi*(math.sqrt(pend_length/9.8))
+SPEED_MULTIPLIER =  float(input("\n\tSpeed Multiplier: "))
+THETA_INCREMENT =  (math.cos(math.radians(THETA))*SPEED_MULTIPLIER)-(math.cos(math.radians(MAX_THETA))*(SPEED_MULTIPLIER*0.9))
+
+
+def init():
+    glClearColor(0.0,0.0,0.0,1.0) 
+    gluOrtho2D(-WINDOW_SIZE,WINDOW_SIZE,-WINDOW_SIZE,WINDOW_SIZE) 
+
+def update(value):
+    global GLOBAL_X_POSTION 
+    global GLOBAL_Y_POSTION 
+    global pend_length 
+    global STATE
+    global WINDOW_SIZE
+    global THETA
+    global MAX_THETA
+    global THETA_INCREMENT
+    glutPostRedisplay()
+    glutTimerFunc(int(1000/TARGET_FPS),update,int(0))
+    if(STATE == 1):
+        if(THETA<MAX_THETA):
+            THETA = THETA + (THETA_INCREMENT)
+        else:
+            STATE=-1
+    elif(STATE == -1):
+        if(THETA>=-MAX_THETA):
+            THETA = THETA - (THETA_INCREMENT)
+
+        else:
+            STATE=1
+    GLOBAL_X_POSTION = pend_length * math.sin(math.radians(THETA))
+    GLOBAL_Y_POSTION = - (pend_length * math.cos(math.radians(THETA)))
+    THETA_INCREMENT =  (math.cos(math.radians(THETA))*SPEED_MULTIPLIER)-(math.cos(math.radians(MAX_THETA))*(SPEED_MULTIPLIER*0.9))
+
+
+
+
+
+def drawCircle(x,y):
+    i = 0.0        
+    glBegin(GL_TRIANGLE_FAN)    
+    glVertex2f(x, y);
+    for i in numpy.arange(0, 360.0, 1.0):
+        glVertex2f(BOB_RADIUS*math.cos(math.pi * i / 180.0) + x, BOB_RADIUS*math.sin(math.pi * i / 180.0) + y)
+    
+    glEnd();
+
+def drawPendulam():
+    glClear(GL_COLOR_BUFFER_BIT) 
+    glColor3f(1.0,0.0,0.0) 
+    glLineWidth(5)
+    glBegin(GL_LINES)
+    glVertex2f(0,0)
+    glVertex2f(GLOBAL_X_POSTION,GLOBAL_Y_POSTION)
+    glEnd()
+    drawCircle(GLOBAL_X_POSTION,GLOBAL_Y_POSTION)
+    glutSwapBuffers()
+
+
+
+
+def main():
+    print("Pendulum. Starting Window:")
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGB  | GLUT_DOUBLE)
+    glutInitWindowSize(500,500)
+    glutInitWindowPosition(0,0)
+    glutCreateWindow("Pendulum | Naseem's OpenGLlabs")
+    glutDisplayFunc(drawPendulam)
+    glutTimerFunc(0,update,0)
+    glutIdleFunc(drawPendulam)
+
+    init()
+    glutMainLoop()
+  
+
+
+main()
+
+
+# ROLLING BALL
+
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import * 
+import math
+import numpy
+import random
+
+WINDOW_SIZE = 2000
+ANGLE= float(input("Angle of Inclination: "))
+LINE_START_X= -WINDOW_SIZE
+LINE_START_Y= -WINDOW_SIZE*math.tan(math.radians(ANGLE))
+GLOBAL_X_POSTION = -WINDOW_SIZE
+GLOBAL_Y_POSTION = -WINDOW_SIZE*math.tan(math.radians(ANGLE))
+TARGET_FPS=60
+RADIUS = float(input("Radius of Ball: "))
+FRAMES = 0
+j=0.0
+SPEED_MULTIPLIER = float(input("Speed Mulitplier: "))
+
+
+
+
+def init():
+    glClearColor(0.0,0.0,0.0,1.0) 
+    gluOrtho2D(-WINDOW_SIZE,WINDOW_SIZE,-WINDOW_SIZE,WINDOW_SIZE) 
+
+def update(value):
+    global GLOBAL_X_POSTION
+    global GLOBAL_Y_POSTION
+    global TARGET_FPS
+    global j
+    global FRAMES
+    global SPEED_MULTIPLIER
+    FRAMES = FRAMES + 1
+    time = (FRAMES/60.0)
+    j=j-(FRAMES/9)
+    GLOBAL_X_POSTION = GLOBAL_X_POSTION + SPEED_MULTIPLIER*math.cos(math.radians(ANGLE))*time
+    GLOBAL_Y_POSTION = GLOBAL_Y_POSTION - SPEED_MULTIPLIER*math.sin(math.radians(ANGLE))*time
+    if GLOBAL_X_POSTION>(WINDOW_SIZE+100) or GLOBAL_X_POSTION<-100 :
+        GLOBAL_X_POSTION = -WINDOW_SIZE
+        GLOBAL_Y_POSTION = -WINDOW_SIZE*math.tan(math.radians(ANGLE))
+
+    glutPostRedisplay()
+    glutTimerFunc(int(1000/TARGET_FPS),update,0)
+
+
+def drawCircle(x,y):
+    i = 0.0        
+    glBegin(GL_TRIANGLE_FAN)    
+    global j
+    for i in numpy.arange(0, 360.0, 1.0):
+        glColor3f(0,abs(math.sin(i)),abs(math.sin(i))) 
+        glVertex2f(RADIUS*math.cos(math.pi * (j+i) / 180.0) + x, RADIUS*math.sin(math.pi * (j+i) / 180.0) + y)
+    glEnd()
+
+def drawLine():
+    glClear(GL_COLOR_BUFFER_BIT) 
+    glColor3f(0.0,1.0,0.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(LINE_START_X,LINE_START_Y)
+    glVertex2f(WINDOW_SIZE,0)
+    glEnd()
+
+
+
+def drawScene():
+    global GLOBAL_X_POSTION
+    global GLOBAL_Y_POSTION
+    global RADIUS
+    global ANGLE
+    drawLine()
+    drawCircle(GLOBAL_X_POSTION+RADIUS*math.sin(math.radians(ANGLE)),GLOBAL_Y_POSTION + RADIUS*math.cos(math.radians(ANGLE)))
+    glutSwapBuffers()
+
+
+
+
+def main():
+    print("Rolling Ball @ "+str(ANGLE)+"deg Starting Window:")    
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGB  | GLUT_DOUBLE)
+    glutInitWindowSize(500,500)
+    glutInitWindowPosition(0,0)
+    glutCreateWindow("Pendulum | Naseem's OpenGLlabs")
+    glutDisplayFunc(drawScene)
+    glutTimerFunc(0,update,0)
+    glutIdleFunc(drawScene)
+
+    init()
+    glutMainLoop()
+  
+
+
+main()
+
+
+# MAN WALKING
+
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import * 
+import math
+import numpy
+import random
+
+WINDOW_SIZE = 2000
+ANGLE= 40
+
+
+
+GLOBAL_X_POSTION = 0
+GLOBAL_Y_POSTION = 0
+GLOBAL_X_DIR = 1
+TARGET_FPS=60
+RADIUS = 100
+FRAMES = 0
+
+SPINE_START_X= GLOBAL_X_POSTION
+SPINE_START_Y= GLOBAL_Y_POSTION
+SPINE_END_X= SPINE_START_X
+SPINE_END_Y= SPINE_START_Y-200
+
+ANGLE_HAND = 1.0
+HAND_ANIM_DIR = 1
+
+
+def init():
+    glClearColor(0.0,0.0,0.0,1.0) 
+    gluOrtho2D(-WINDOW_SIZE,WINDOW_SIZE,-WINDOW_SIZE,WINDOW_SIZE) 
+
+def update(value):
+    global GLOBAL_X_POSTION
+    global TARGET_FPS
+    global SPINE_START_X
+    global SPINE_START_Y
+    global SPINE_END_X
+    global SPINE_END_Y
+    global ANGLE_HAND
+    global HAND_ANIM_DIR
+    global GLOBAL_X_DIR
+    if(GLOBAL_X_POSTION==WINDOW_SIZE):
+        GLOBAL_X_DIR = -1
+    elif (GLOBAL_X_POSTION == -WINDOW_SIZE):
+        GLOBAL_X_DIR = 1
+    
+    if(GLOBAL_X_DIR == 1):
+        GLOBAL_X_POSTION = GLOBAL_X_POSTION + 10
+    elif(GLOBAL_X_DIR == -1):
+        GLOBAL_X_POSTION = GLOBAL_X_POSTION - 10
+
+
+
+    
+    SPINE_START_X= GLOBAL_X_POSTION
+    SPINE_START_Y= GLOBAL_Y_POSTION
+    SPINE_END_X= SPINE_START_X
+    SPINE_END_Y= SPINE_START_Y-200
+    if(ANGLE_HAND==45.0):
+        HAND_ANIM_DIR = -1
+    elif(ANGLE_HAND==-45.0):
+        HAND_ANIM_DIR = 1
+    
+    if(HAND_ANIM_DIR == 1):
+        ANGLE_HAND = ANGLE_HAND + 1.0
+    elif(HAND_ANIM_DIR == -1):
+        ANGLE_HAND = ANGLE_HAND - 1.0
+
+    glutPostRedisplay()
+    glutTimerFunc(int(1000/TARGET_FPS),update,0)
+
+
+
+def drawHead(x,y):
+    i = 0.0        
+    glBegin(GL_TRIANGLE_FAN)
+    for i in numpy.arange(0, 360.0, 1.0):
+        glColor3f(0,1,1) 
+        glVertex2f(RADIUS*math.cos(math.pi * (i) / 180.0) + x, RADIUS*math.sin(math.pi * (i) / 180.0) + y)
+    glEnd()
+
+def drawSpine():
+    glClear(GL_COLOR_BUFFER_BIT) 
+    glColor3f(0.0,1.0,0.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_START_X,SPINE_START_Y)
+    glVertex2f(SPINE_END_X,SPINE_END_Y)
+    glEnd()
+
+def drawLegL():
+    global SPINE_END_X
+    global SPINE_END_Y
+    global SPINE_START_X
+    global SPINE_START_Y
+    glColor3f(1.0,1.0,1.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_END_X,SPINE_END_Y)
+    glVertex2f(SPINE_END_X-100*math.sin(math.radians(ANGLE_HAND)),SPINE_END_Y-100*math.cos(math.radians( ANGLE_HAND)))
+
+    glEnd()
+
+
+
+def drawLegR():
+    global SPINE_END_X
+    global SPINE_END_Y
+    global SPINE_START_X
+    global SPINE_START_Y
+    global ANGLE_HAND
+    glColor3f(1.0,1.0,0.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES),
+    glVertex2f(SPINE_END_X,SPINE_END_Y)
+    glVertex2f(SPINE_END_X+100*math.sin(math.radians(ANGLE_HAND)),SPINE_END_Y-100*math.cos(math.radians( ANGLE_HAND)))
+    glEnd()
+
+def drawHandL():
+    
+    global SPINE_START_X
+    global SPINE_START_Y
+    glColor3f(1.0,1.0,1.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_START_X,SPINE_START_Y-100)
+    glVertex2f(SPINE_START_X-100*math.sin(math.radians(ANGLE_HAND)),SPINE_START_Y-100*math.cos(math.radians( ANGLE_HAND)))
+
+    # glVertex2f(SPINE_START_X-100*math.sin(math.radians(45)),SPINE_START_Y-100*math.cos(math.radians(45)))
+    glEnd()
+
+def drawHandR():
+    
+    global SPINE_START_X
+    global SPINE_START_Y
+    glColor3f(1.0,1.0,1.0) 
+    glLineWidth(2)
+    glBegin(GL_LINES)
+    glVertex2f(SPINE_START_X,SPINE_START_Y-100)
+    glVertex2f(SPINE_START_X-100*math.sin(math.radians(-ANGLE_HAND)),SPINE_START_Y-100*math.cos(math.radians(-ANGLE_HAND)))
+    glEnd()
+
+def drawScene():
+    global SPINE_START_X
+    global SPINE_START_Y
+    drawSpine()
+    drawHead(SPINE_START_X,SPINE_START_Y+RADIUS)
+    drawLegL()
+    drawLegR()
+    drawHandL()
+    drawHandR()
+    glutSwapBuffers()
+
+
+
+
+def main():
+    print("Man Animation. Starting Window...")
+    glutInit(sys.argv)
+    glutInitDisplayMode(GLUT_RGB  | GLUT_DOUBLE)
+    glutInitWindowSize(500,500)
+    glutInitWindowPosition(0,0)
+    glutCreateWindow("Man | Naseem's OpenGLlabs")
+    glutDisplayFunc(drawScene)
+    glutTimerFunc(0,update,0)
+    glutIdleFunc(drawScene)
+
+    init()
+    glutMainLoop()
+  
+
+
+main()
+
+
+#FAN 
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+
+from math import cos,sin,radians
+
+side = 50
+theta = 0
+r = 10
+
+def init():
+    glutInit()
+    glutInitDisplayMode(GLUT_RGB)
+    glutInitWindowSize(500,500)
+    glutCreateWindow("Sumesh2")
+    glClearColor(0,0,0,0)
+    gluOrtho2D(-100,100,-100,100)
+
+
+def update(n):
+    global theta
+    theta += 1
+    glutTimerFunc(int(1000/60),update,0)
+    glutPostRedisplay()
+
+
+def rotated_points(vertex,theta):
+    return[
+        round(
+            vertex[0]*cos(radians(theta)) 
+            - vertex[1]*sin(radians(theta))
+            ),
+        round(
+            vertex[0]*sin(radians(theta)) 
+            + vertex[1]*cos(radians(theta))
+        )
+    ]
+
+def fan():
+    global side
+    vertices = [
+        [0,0],
+        [-side/4,side],
+        [side/4,side]
+    ]
+    glColor3f(1,0,1)
+    glLineWidth(5.0)
+    glBegin(GL_POLYGON)
+    for vertex in vertices:
+        glVertex2fv(rotated_points(vertex,theta))
+    for vertex in vertices:
+        glVertex2fv(rotated_points(vertex,theta+120))
+    for vertex in vertices:
+        glVertex2fv(rotated_points(vertex,theta+240))        
+    glEnd()
+
+def circle():
+    global r
+    glColor3f(0,0,1)
+    glLineWidth(1)
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range (0,360):
+        glVertex2f(r*cos(radians(i)),r*sin(radians(i)))
+    glEnd()
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    fan()
+    circle()
+    glFlush()
+
+def main():
+    init()
+    glutDisplayFunc(display)
+    glutTimerFunc(0,update,0)
+    glutMainLoop()
+
+main()
+
+
+# RIPPLE
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import pi, cos, sin
+
+WINDOW_TITLE = "Template"
+WINDOW_SIZE = 500
+PLANE_SIZE = 100
+X = 0
+CENTER_1 = [0, 0]
+RAD = [10]
+
+
+def get_inputs():
+    global X
+    X = float(input("Enter X: "))
+
+
+def init_glut():
+    print(f"\nOpening {WINDOW_TITLE}...")  # Opening message
+    glutInitDisplayMode(GLUT_RGB)
+    glutInit()  # Initiating glut
+    glutInitWindowSize(WINDOW_SIZE, WINDOW_SIZE)  # window size
+    glutCreateWindow(WINDOW_TITLE)  # window title
+    glClearColor(0.0, 0.0, 0.0, 0.0)  # window background
+    gluOrtho2D(-PLANE_SIZE, PLANE_SIZE, -PLANE_SIZE, PLANE_SIZE)
+
+
+def plot_circle():
+    for r in RAD:
+        glColor3f(1, 1, 0)
+        glPointSize(3.0)
+        glBegin(GL_POINTS)
+        thetta = 0
+        d_thetta = 1 / (10000)
+        while thetta <= pi /4:
+            x = r * cos(thetta)
+            y = r * sin(thetta)
+            glVertex2f(x + CENTER_1[0], y + CENTER_1[1])
+            glVertex2f(x + CENTER_1[0], -y + CENTER_1[1])
+            glVertex2f(-x + CENTER_1[0], y + CENTER_1[1])
+            glVertex2f(-x + CENTER_1[0], -y + CENTER_1[1])
+            glVertex2f(y + CENTER_1[0], x + CENTER_1[1])
+            glVertex2f(-y + CENTER_1[0], x + CENTER_1[1])
+            glVertex2f(y + CENTER_1[0], -x + CENTER_1[1])
+            glVertex2f(-y + CENTER_1[0], -x + CENTER_1[1])
+            thetta += d_thetta
+        glEnd()
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)
+    plot_circle()
+    glFlush()
+
+def animator(x):
+    global RAD
+    if len(RAD) <= 10:
+        RAD.append(RAD[len(RAD) - 1] + 10)
+        glutTimerFunc(1000, animator, 0)
+        glutPostRedisplay()
+
+
+
+def main():
+    init_glut()
+    glutDisplayFunc(display)  # display function
+    glutTimerFunc(0, animator, 0)
+    glutMainLoop()  # process events and triggers callback functions
+
+
+if __name__ == "__main__":
+    main()
+
+
+# SOLAR SYSTEM
+
+from OpenGL.GL import *
+
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+
+
+sunRadius = 70
+planetRadius = 35
+planetCenter = [0,200]
+p2_cent= [0,300]
+orbitRadius = 200
+offset = 0
+offset2=0
+theta=0
+theta2=0
+r2 = 35
+orb_r2 =300
+
+
+def init(): 
+	glutInit()
+	glutInitDisplayMode(GLUT_RGB)
+	glutInitWindowSize(800,800)
+	glutCreateWindow("solar system")
+	glClearColor(0.0,0.0,0.0,1.0)
+	gluOrtho2D(-400,400,-400,400)
+	
+
+def sun():
+	global sunRadius, offset2
+	glPointSize(2)
+	glBegin(GL_TRIANGLE_FAN)
+	for i in range(0,361):
+		if i<181:
+			glColor3f(0.8,0.2,0)
+		else:
+			glColor3f(1,1,0)
+		x=sunRadius*cos(radians(i)+offset2)
+		y=sunRadius*sin(radians(i)+offset2)
+		glVertex2f(+x,+y)
+			
+	glEnd()
+	
+	
+def planet():
+	global planetRadius, offset, planetCenter	
+	glPointSize(2)
+	planetCenter[0] = orbitRadius*cos(radians(theta))
+	planetCenter[1] =orbitRadius*sin(radians(theta))
+	glBegin(GL_TRIANGLE_FAN)
+	for i in range(0,361):
+		if i<181:
+			glColor3f(0.0,0.4,0.7)
+		else:
+			glColor3f(1.0,0.5,0.8)
+		x=planetRadius*cos(radians(i)+offset)+planetCenter[0]
+		y=planetRadius*sin(radians(i)+offset)+planetCenter[1]
+		glVertex2f(x,y)
+	glEnd()
+	
+
+def planet2():
+	global offset
+	p2_cent[0] = orb_r2*cos(radians(theta2))
+	p2_cent[1] = orb_r2*sin(radians(theta2))
+	glBegin(GL_TRIANGLE_FAN)	
+	for i in range(0,361):
+		if i<181:
+			glColor3f(0.7,0.3,0.8)
+		else:
+			glColor3f(0.3,1,0.6)
+		x=r2*cos(radians(i)+offset)+p2_cent[0]
+		y=r2*sin(radians(i)+offset)+p2_cent[1]
+		glVertex2f(x,y)			
+	glEnd()
+	
+
+def animate(x):
+	global offset, theta, theta2 ,offset2
+	offset += 0.5
+	offset2 += 1
+	theta +=5
+	theta2 +=1
+	glutTimerFunc(100,animate,0)
+	glutPostRedisplay()
+	
+
+def orbit():
+	global orbitRadius
+	glPointSize(6)
+	glColor3f(1,1,0)
+	glBegin(GL_POINTS)
+	for i in range(0,46):
+		x=orbitRadius*cos(radians(i))
+		y=orbitRadius*sin(radians(i))
+		glVertex2f(+x,+y)
+		glVertex2f(+x,-y)
+		glVertex2f(-x,+y)
+		glVertex2f(-x,-y)
+		glVertex2f(+y,+x)
+		glVertex2f(+y,-x)
+		glVertex2f(-y,+x)
+		glVertex2f(-y,-x)
+		
+	glEnd()
+		
+		
+def orbit2():
+	glPointSize(6)
+	glColor3f(0.5,0.5,0.0)
+	glBegin(GL_POINTS)
+	for i in range(0,46):
+		x=orb_r2*cos(radians(i))
+		y=orb_r2*sin(radians(i))
+		glVertex2f(+x,+y)
+		glVertex2f(+x,-y)
+		glVertex2f(-x,+y)
+		glVertex2f(-x,-y)
+		glVertex2f(+y,+x)
+		glVertex2f(+y,-x)
+		glVertex2f(-y,+x)
+		glVertex2f(-y,-x)
+		
+	glEnd()
+		
+	
+def display():
+	glClear(GL_COLOR_BUFFER_BIT)
+	sun()
+	orbit()
+	planet()
+	orbit2()
+	planet2()
+	glFlush()
+	
+	
+def main(): 
+	init()
+	glutDisplayFunc(display)
+	glutTimerFunc(0,animate,0)
+	glutMainLoop()
+	
+	
+main()
+
+# WINDMILL
+
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from math import *
+import random
+import time
+
+RADIUS = 100
+theta = 0
+r = 25
+xc=0
+yc=0
+height = 200
+moonRadius = 25
+moonxc = -150
+moonyc = 150
+rainx = 50
+rainy = 200
+rainy2 = 180
+
+
+def init():
+    glutInitDisplayMode(GLUT_RGB)
+    glutInit()
+    glutInitWindowSize(500,500)
+    glutCreateWindow("Fan")
+    glClearColor(0,0,0,0)
+    gluOrtho2D(-200,200,-200,200)
+
+def rotate(x):
+    global theta, rainy, rainy2
+    theta -= 1
+    rainy -= 0.5
+    rainy2 -= 0.5
+    if rainy == -200:
+        rainy = 200
+        rainy2 = 180
+    glutTimerFunc(int(1000/60), rotate, 0)
+    glutPostRedisplay()
+
+def getRotatedPoints(vertice, theta):
+    return [
+        round(
+            vertice[0]*cos(radians(theta)) 
+            - vertice[1]*sin(radians(theta))
+        ),
+        round(
+            vertice[0]*sin(radians(theta)) 
+            + vertice[1]*cos(radians(theta))
+        ),
+    ]
+
+def circle():
+    global r, xc, yc
+    glColor3f(0,1,0)
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range (0,361):
+        x = r*cos(radians(i))+xc
+        y = r*sin(radians(i))+yc 
+        glVertex2f(x,y)
+    glEnd()
+
+def windMill():
+    global height
+    vertices = [
+        [0,0],
+        [-height/8, -height],
+        [height/8, -height]
+    ]
+    glColor3f(1,0.5,0.3)
+    glBegin(GL_POLYGON)
+    for vertice in vertices:
+        glVertex2fv(vertice)
+    glEnd()
+
+def moon():
+    global moonRadius, moonxc, moonyc
+    glColor3f(0.8,0.8,0.8)
+    glBegin(GL_TRIANGLE_FAN)
+    for i in range (361):
+        x = moonRadius * cos(radians(i)) + moonxc
+        y = moonRadius * sin(radians(i)) + moonyc
+        glVertex2f(x, y)
+    glEnd()
+
+def rain(x,y):
+    global rainx, rainy, rainy2
+    glColor3f(0,0,0.8)
+    glBegin(GL_LINES)
+    glVertex2f(x, rainy - y)    
+    glVertex2f(x, rainy2 - y)    
+    glEnd()
+
+def wings():
+    global theta
+    vertices = [
+        [0,0],
+        [-RADIUS/4, RADIUS],
+        [RADIUS/4, RADIUS]
+    ]
+    glColor3f(0,1,1)
+    glLineWidth(6.0)
+    glBegin(GL_POLYGON)
+    for vertice in vertices:
+        glVertex2fv(getRotatedPoints(vertice, theta))
+    for vertice in vertices:
+        glVertex2fv(getRotatedPoints(vertice, theta + 120))
+    for vertice in vertices:
+        glVertex2fv(getRotatedPoints(vertice, theta + 240))
+    glEnd()
+
+
+def fan():
+    glClear(GL_COLOR_BUFFER_BIT)
+    for i in range(random.randint(0,40)):
+        rain(random.randint(-200,200),random.randint(-100,100))
+    windMill()
+    wings()
+    circle()
+    moon()
+    glFlush()
+
+
+def main():
+    init()
+    glutDisplayFunc(fan)
+    glutTimerFunc(0,rotate,0)
+    glutMainLoop()
+
+main()
